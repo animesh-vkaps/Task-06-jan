@@ -1,0 +1,22 @@
+.App {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  
+}
+
+
+.btn-section {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+}
+
+button.close-btn.btn.btn-primary {
+  background: #fff;
+  border: 1px solid #46139f;
+  color: #46139f;
+}
+
+
