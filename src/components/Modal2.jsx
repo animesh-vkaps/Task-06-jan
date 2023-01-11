@@ -2,9 +2,13 @@ import React, { useEffect, useState } from "react";
 import { Button, Modal, Table } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import InfiniteScroll from "react-infinite-scroll-component";
+import axios from "axios";
 
 const Modal2 = (props) => {
   const { contacts } = props;
+  let page = 1;
+
   const [even, setEven] = useState(false);
 
   const navigate = useNavigate();
@@ -36,6 +40,32 @@ const Modal2 = (props) => {
     }
     !even ? setUSContacts(EvenArr) : setUSContacts(contacts);
   };
+
+  const fetchData = async (page) => {
+    await axios
+      .get(
+        `https://api.dev.pastorsline.com/api/contacts.json?companyId=171&page=${page}`,
+        {
+          headers: {
+            Authorization: `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjU2MCwiZXhwIjoxNjc2NDM5MjI0LCJ0eXBlIjoiYWNjZXNzIiwidGltZXN0YW1wIjoxNjYwODg3MjI0fQ.X6EnuvO5j5n9WLNrQUyJ9M4ABtDQpfsrjfWnts3GmPs`,
+          },
+        }
+      )
+      .then((res) => {
+        const data = res.data.contacts;
+        const contArr = Object.values(data);
+
+        const usArr = contArr.filter((ele) => {
+          if (ele.country.iso === "US") {
+            return ele;
+          }
+          return null;
+        });
+        setUSContacts([...usContacts, ...usArr]);
+        page = page + 1;
+      });
+  };
+
   return (
     <>
       <Modal
@@ -54,36 +84,52 @@ const Modal2 = (props) => {
           <input value={searchTerm} type="search" onChange={searchKeyword} />{" "}
           {usContacts ? (
             <>
-              <Table striped bordered hover size="sm">
-                <thead>
-                  <tr>
-                    <th>First Name</th>
-                    <th>Email</th>
-                    <th>Contact_ID</th>
-                    <th>Contact Number</th>
-                    <th>Country</th>
-                  </tr>
-                </thead>
-                {ContactResData.loading ? (
-                  <div>Loading...Please Wait</div>
-                ) : (
-                  <tbody>
-                    {usContacts?.map((contact) => {
-                      return (
-                        <>
-                          <tr>
-                            <td>{contact.first_name}</td>
-                            <td>{contact.email}</td>
-                            <td>{contact.id}</td>
-                            <td>{contact.phone_number}</td>
-                            <td>{contact.country.iso}</td>
-                          </tr>
-                        </>
-                      );
-                    })}
-                  </tbody>
-                )}
-              </Table>
+              <InfiniteScroll
+                dataLength={usContacts.length}
+                next={() => {
+                  if (!searchTerm) {
+                    fetchData();
+                  }
+                }}
+                hasMore={true}
+                loader={""}
+                endMessage={
+                  <p style={{ textAlign: "center" }}>
+                    <b>Yay! You have seen it all</b>
+                  </p>
+                }
+              >
+                <Table striped bordered hover size="sm">
+                  <thead>
+                    <tr>
+                      <th>First Name</th>
+                      <th>Email</th>
+                      <th>Contact_ID</th>
+                      <th>Contact Number</th>
+                      <th>Country</th>
+                    </tr>
+                  </thead>
+                  {ContactResData.loading ? (
+                    <div>Loading...Please Wait</div>
+                  ) : (
+                    <tbody>
+                      {usContacts?.map((contact) => {
+                        return (
+                          <>
+                            <tr>
+                              <td>{contact.first_name}</td>
+                              <td>{contact.email}</td>
+                              <td>{contact.id}</td>
+                              <td>{contact.phone_number}</td>
+                              <td>{contact.country.iso}</td>
+                            </tr>
+                          </>
+                        );
+                      })}
+                    </tbody>
+                  )}
+                </Table>
+              </InfiniteScroll>
             </>
           ) : (
             ""
@@ -104,7 +150,7 @@ const Modal2 = (props) => {
               marginRight: "7px",
             }}
             onClick={() => {
-              props.onHide();
+              props.allcontacts();
               navigate("/modal1");
             }}
           >

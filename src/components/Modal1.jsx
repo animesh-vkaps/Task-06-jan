@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Button, Modal, Table } from "react-bootstrap";
-import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Modal3 from "./Modal3";
 import InfiniteScroll from "react-infinite-scroll-component";
 import axios from "axios";
 const Modal1 = (props) => {
   const { contacts } = props;
-  const ContactResData = useSelector((store) => store.contactData);
   let page = 1;
   const [modalThreeShow, setModalThreeShow] = useState(false);
 
@@ -72,16 +70,24 @@ const Modal1 = (props) => {
 
   return (
     <>
+      <Modal3
+        singleContact={singleContact}
+        closeModal={() => setModalThreeShow(false)}
+        show={modalThreeShow}
+        onHide={() => {
+          setModalThreeShow(false);
+        }}
+      />
       <Modal
         {...props}
-        restoreFocus = {true}
+        restoreFocus={true}
         size="xl"
         aria-labelledby="contained-modal-title-vcenter"
         centered
         className="modal-dialog modal-dialog-scrollable"
         // onHide={props.closeModal()}
       >
-        <Modal.Header >
+        <Modal.Header>
           <Modal.Title id="contained-modal-title-vcenter">
             All Contacts
           </Modal.Title>
@@ -92,14 +98,14 @@ const Modal1 = (props) => {
           {contactsArr ? (
             <>
               <InfiniteScroll
-                dataLength={contactsArr.length} //This is important field to render the next data
+                dataLength={contactsArr.length}
                 next={() => {
                   if (!searchTerm) {
                     fetchData();
                   }
                 }}
                 hasMore={true}
-                loader={<h4></h4> }
+                loader={""}
                 endMessage={
                   <p style={{ textAlign: "center" }}>
                     <b>Yay! You have seen it all</b>
@@ -166,9 +172,7 @@ const Modal1 = (props) => {
           </Button>
           <Button
             onClick={() => {
-              // props.onHide();
-              props.closeModal();
-              // props.onExited()
+              props.uscontacts();
               navigate("/modal2");
             }}
           >
@@ -179,15 +183,6 @@ const Modal1 = (props) => {
           </Button>
         </Modal.Footer>
       </Modal>
-
-      <Modal3
-        singleContact={singleContact}
-        closeModal={() => setModalThreeShow(false)}
-        show={modalThreeShow}
-        onHide={() => {
-          setModalThreeShow(false);
-        }}
-      />
     </>
   );
 };

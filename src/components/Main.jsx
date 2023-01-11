@@ -31,6 +31,7 @@ const Main = () => {
     if (ele.country.iso === "US") {
       return ele;
     }
+    return null;
   });
   return (
     <>
@@ -63,41 +64,27 @@ const Main = () => {
           </div>
 
           <Modal1
-            onExited  ={()=>setModalTwoShow(true)}
+            uscontacts={() => setModalTwoShow(true)}
             contacts={ContactARr}
             closeModal={() => {
               setModalOneShow(false);
-              // setModalTwoShow(true);
-
+              setModalTwoShow(false);
               navigate("/");
             }}
             show={modalOneShow}
-            // onHide={() => {
-            //   // eslint-disable-next-line
-            //   {
-            //   console.log("On hide")
-
-            //     // setModalOneShow(false);
-            //     setModalTwoShow(true);
-            //     navigate("/")
-            //   }
-            // }}
           />
-
           <Modal2
             contacts={usArr}
             closeModal={() => {
               setModalTwoShow(false);
-              // setModalOneShow(true);
+              setModalOneShow(false);
               navigate("/");
             }}
             show={modalTwoShow}
-            // onHide={() => {
-            //   setModalTwoShow(false);
-            //   navigate("/")
-
-            //   // setModalOneShow(true);
-            // }}
+            allcontacts={() => {
+              setModalOneShow(true);
+              setModalTwoShow(false);
+            }}
           />
         </>
       )}
